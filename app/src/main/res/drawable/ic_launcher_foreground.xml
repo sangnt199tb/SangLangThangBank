@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Ba cột tăng dần, nằm trong vùng an toàn 66dp ở giữa icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,59a3,3 0,0 1,3 -3h4a3,3 0,0 1,3 3v13h-10z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M49,49a3,3 0,0 1,3 -3h4a3,3 0,0 1,3 3v23h-10z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M62,39a3,3 0,0 1,3 -3h4a3,3 0,0 1,3 3v33h-10z" />
+</vector>
