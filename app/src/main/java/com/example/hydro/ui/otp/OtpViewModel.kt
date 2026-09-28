@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hydro.data.ekyc.EkycSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -70,6 +71,7 @@ class OtpViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
             delay(1000)
             if (uiState.code == DEMO_OTP) {
                 countdownJob?.cancel()
+                EkycSession.phone = uiState.phone
                 uiState = uiState.copy(isVerifying = false, isVerified = true)
             } else {
                 val remaining = uiState.remainingAttempts - 1
