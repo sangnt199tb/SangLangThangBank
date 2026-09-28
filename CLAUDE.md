@@ -41,6 +41,11 @@ Onboarding → OTP → Chụp CCCD → Quét chip NFC → Xác nhận thông tin
 - Đăng ký (`RegisterViewModel.register`) đang dùng `delay(...)`. Tên đăng nhập đã có người dùng là danh sách giả `DEMO_TAKEN_USERNAMES` (`admin`, `sanglangthang`, `nguyenvanan`).
 - Nội dung điều khoản là văn bản mẫu.
 
+## Việc còn dở, cần kiểm tra hoặc xác nhận
+- Chưa chạy thử trên điện thoại thật các màn Chụp CCCD, Quét chip, Xác nhận, Tạo tài khoản (mới build và chạy unit test). Cần xem ảnh CCCD cắt theo khung có bị lẹm mép không (nếu có thì chỉnh `margin` trong `cropBoxInImage`).
+- Quy tắc tên đăng nhập và mật khẩu trong `CredentialValidator` là do Claude đặt tạm, chờ người dùng hoặc backend xác nhận.
+- Đã soạn sẵn 10 câu hỏi gửi đối tác SDK (cách nhận SDK, license, yêu cầu kỹ thuật, dữ liệu cần để mở chip, dữ liệu trả về, xác thực chip, tài liệu, thẻ test, bảo mật, đầu mối hỗ trợ). Chưa rõ người dùng đã gửi cho GTEL chưa.
+
 ## Thương hiệu
 Logo tự vẽ (3 cột đỏ tăng dần, `ic_brand_mark.xml`) kèm chữ "SangLangThang**Bank**". Không dùng tên, logo hay nhận diện của ngân hàng thật (ví dụ Techcombank). Nếu cần, chỉ dùng màu đỏ – trắng tương tự.
 
