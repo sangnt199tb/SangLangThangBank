@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -20,7 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
-import com.example.hydro.ui.onboarding.OnboardingScreen
+import com.example.hydro.navigation.AppNavHost
+import com.example.hydro.ui.components.StatusBarIcons
 import com.example.hydro.ui.theme.HydroTheme
 
 class MainActivity : ComponentActivity() {
@@ -29,13 +31,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HydroTheme {
-                // Chưa đăng ký thì hiện màn onboarding, xong thì vào màn chính
-                var onboarded by rememberSaveable { mutableStateOf(false) }
-                if (onboarded) {
-                    HydroApp()
-                } else {
-                    OnboardingScreen(onSubmitted = { onboarded = true })
-                }
+                AppNavHost()
             }
         }
     }
@@ -45,6 +41,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HydroApp() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+
+    // Màn chính nền sáng thì icon thanh trạng thái màu tối (và ngược lại khi dùng giao diện tối)
+    StatusBarIcons(darkIcons = !isSystemInDarkTheme())
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {

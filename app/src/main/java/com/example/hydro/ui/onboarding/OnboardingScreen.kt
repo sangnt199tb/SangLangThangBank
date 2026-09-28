@@ -1,6 +1,5 @@
 package com.example.hydro.ui.onboarding
 
-import android.app.Activity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -35,7 +33,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,12 +40,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -63,36 +54,33 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hydro.R
-import com.example.hydro.ui.components.BrandLogo
-import com.example.hydro.ui.theme.BrandRed
-import com.example.hydro.ui.theme.BrandRedDark
+import com.example.hydro.ui.components.BrandHeader
+import com.example.hydro.ui.components.BrandHeaderOverlap
 import com.example.hydro.ui.theme.HydroTheme
 
 private val FieldShape = RoundedCornerShape(12.dp)
 
-// Phần thẻ form đè lên phần đầu màu đỏ một đoạn bằng chừng này
-private val CardOverlap = 40.dp
-
 /**
  * Màn hình onboarding: nhập email, số điện thoại, mã MIS và captcha.
- * [onSubmitted] được gọi khi gửi thông tin thành công.
+ * [onSubmitted] được gọi kèm số điện thoại khi gửi thông tin thành công.
  */
 @Composable
 fun OnboardingScreen(
-    onSubmitted: () -> Unit,
+    onSubmitted: (phone: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: OnboardingViewModel = viewModel(),
 ) {
     val state = viewModel.uiState
 
     LaunchedEffect(state.isSubmitted) {
-        if (state.isSubmitted) onSubmitted()
+        if (state.isSubmitted) {
+            onSubmitted(state.phone)
+            // Đánh dấu đã xử lý, để khi quay lại màn này không tự chuyển đi lần nữa
+            viewModel.onSubmittedHandled()
+        }
     }
-
-    LightStatusBarIcons()
 
     OnboardingContent(
         state = state,
@@ -140,11 +128,14 @@ private fun OnboardingContent(
             .imePadding() // chừa chỗ cho bàn phím, tránh che ô nhập
             .verticalScroll(rememberScrollState()),
     ) {
-        OnboardingHeader()
+        BrandHeader(
+            title = "Mở tài khoản trực tuyến",
+            subtitle = "Chỉ vài bước đơn giản, không cần đến quầy giao dịch.",
+        )
 
         Column(
             modifier = Modifier
-                .offset(y = -CardOverlap)
+                .offset(y = -BrandHeaderOverlap)
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -289,47 +280,6 @@ private fun OnboardingContent(
     }
 }
 
-/** Phần đầu màu đỏ: logo và lời chào. Nền kéo dài lên cả thanh trạng thái. */
-@Composable
-private fun OnboardingHeader(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp))
-            .background(Brush.linearGradient(listOf(BrandRed, BrandRedDark)))
-            .drawBehind {
-                // Hai vòng tròn mờ trang trí ở góc phải
-                drawCircle(
-                    color = Color.White.copy(alpha = 0.08f),
-                    radius = size.width * 0.45f,
-                    center = Offset(size.width * 0.95f, size.height * 0.1f),
-                )
-                drawCircle(
-                    color = Color.White.copy(alpha = 0.06f),
-                    radius = size.width * 0.25f,
-                    center = Offset(size.width * 0.7f, size.height * 0.75f),
-                )
-            }
-            .statusBarsPadding()
-            .padding(start = 24.dp, end = 24.dp, top = 20.dp, bottom = 28.dp + CardOverlap),
-    ) {
-        BrandLogo()
-        Spacer(Modifier.height(28.dp))
-        Text(
-            text = "Mở tài khoản trực tuyến",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-        )
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = "Chỉ vài bước đơn giản, không cần đến quầy giao dịch.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.85f),
-        )
-    }
-}
-
 @Composable
 private fun SectionTitle(text: String, modifier: Modifier = Modifier) {
     Text(
@@ -455,23 +405,6 @@ private fun TermsDialog(
             TextButton(onClick = onDismiss) { Text("Đóng") }
         },
     )
-}
-
-/**
- * Phần đầu màn hình màu đỏ nên icon trên thanh trạng thái (giờ, pin...) cần màu trắng.
- * Rời màn hình thì trả lại như cũ.
- */
-@Composable
-private fun LightStatusBarIcons() {
-    val view = LocalView.current
-    if (view.isInEditMode) return
-    DisposableEffect(view) {
-        val window = (view.context as Activity).window
-        val controller = WindowCompat.getInsetsController(window, view)
-        val previous = controller.isAppearanceLightStatusBars
-        controller.isAppearanceLightStatusBars = false
-        onDispose { controller.isAppearanceLightStatusBars = previous }
-    }
 }
 
 @Preview(showBackground = true, heightDp = 900)

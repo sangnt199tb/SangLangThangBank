@@ -54,6 +54,11 @@ class OnboardingViewModel : ViewModel() {
         uiState = uiState.copy(captchaInput = value.trim().take(CAPTCHA_LENGTH), captchaError = null)
     }
 
+    /** Gọi sau khi đã chuyển sang màn tiếp theo, để sự kiện "gửi thành công" chỉ xử lý một lần. */
+    fun onSubmittedHandled() {
+        uiState = uiState.copy(isSubmitted = false)
+    }
+
     fun onAcceptedTermsChange(accepted: Boolean) {
         uiState = uiState.copy(acceptedTerms = accepted)
     }
